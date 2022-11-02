@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-
+using Pumpkin.Utility;
 
 namespace Pumpkin.SceneSeparate
 {
@@ -48,7 +48,9 @@ namespace Pumpkin.SceneSeparate
         /// <summary>
         /// 节点管理的场景对象
         /// </summary>
-        private List<SceneObject> m_ObjectList;
+        private List<SceneObjectDataMono> m_ObjectList;
+
+        private bool m_Inside = false;
 
         public TreeNode(Bounds bounds, uint depth, uint childCount, uint maxDepth, TreeType treeNodeType)
         {
@@ -59,7 +61,7 @@ namespace Pumpkin.SceneSeparate
             TreeNodeType = treeNodeType;
 
             m_ChildList = new TreeNode[childCount];
-            m_ObjectList = new List<SceneObject>();
+            m_ObjectList = new List<SceneObjectDataMono>();
         }
 
         /// <summary>
@@ -84,7 +86,7 @@ namespace Pumpkin.SceneSeparate
         /// 添加场景对象到树节点中
         /// </summary>
         /// <param name="obj"></param>
-        public void AddSceneObj(SceneObject obj)
+        public void AddSceneObj(SceneObjectDataMono obj)
         {
             if (m_ObjectList.Contains(obj))
                 return;
@@ -124,7 +126,7 @@ namespace Pumpkin.SceneSeparate
             }
             else
             {
-                obj.SetDepth(m_Depth);
+                obj.Depth = m_Depth;
                 m_ObjectList.Add(obj);
             }
         }
@@ -185,6 +187,53 @@ namespace Pumpkin.SceneSeparate
             }
         }
 
+        public void CheckBoundIsInCamera(Camera camera)
+        {
+            //刷新子节点
+            if (m_ChildList != null)
+            {
+                for (int i = 0; i < m_ChildList.Length; ++i)
+                {
+                    if (m_ChildList[i].Bounds.CheckBoundIsInCamera(camera))
+                    {
+                        m_ChildList[i].CheckBoundIsInCamera(camera);
+                    }
+                    else
+                    {
+                        m_ChildList[i].OutsideCamera(camera);
+                    }
+                }
+            }
+
+            if (m_Inside) return;
+            m_Inside = true;
+            for (int i = 0; i < m_ObjectList.Count; ++i)
+            {
+                // 显示物体
+                ObjDisplayControl.Instance.Show(m_ObjectList[i]);
+            }
+
+        }
+
+        public void OutsideCamera(Camera camera)
+        {
+            //刷新子节点
+            if (m_ChildList != null)
+            {
+                for (int i = 0; i < m_ChildList.Length; ++i)
+                {
+                    m_ChildList[i].OutsideCamera(camera);
+                }
+            }
+            if (!m_Inside) return;
+            m_Inside = false;
+
+            for (int i = 0; i < m_ObjectList.Count; ++i)
+            {
+                // 隐藏物体
+                ObjDisplayControl.Instance.Hide(m_ObjectList[i]);
+            }
+        }
 
 #if UNITY_EDITOR
         public void DrawBounds()

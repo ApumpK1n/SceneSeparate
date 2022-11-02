@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Pumpkin.Utility;
 
 namespace Pumpkin.SceneSeparate
 {
@@ -15,13 +16,17 @@ namespace Pumpkin.SceneSeparate
 
         private SceneObjectLoadController m_Controller;
 
+        public Camera m_CurrentCamera;
+
         private void Awake()
         {
             bounds = terrain.terrainData.bounds;
+            m_CurrentCamera = Camera.main;
         }
 
         private void Start()
         {
+
             m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
             if (m_Controller == null)
                 m_Controller = gameObject.AddComponent<SceneObjectLoadController>();
@@ -40,7 +45,7 @@ namespace Pumpkin.SceneSeparate
                     m_Controller.BuildBVH(sceneObjs);
                     break;
             }
-            
+            m_Controller.SetCamera(m_CurrentCamera);
         }
 
         void OnDrawGizmos()

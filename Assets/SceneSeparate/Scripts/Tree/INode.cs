@@ -11,6 +11,10 @@ namespace Pumpkin.SceneSeparate
         /// </summary>
         Bounds Bounds { get; set; }
 
+        public void CheckBoundIsInCamera(Camera camera);
+
+        public void OutsideCamera(Camera camera);
+
 #if UNITY_EDITOR
         void DrawBounds();
 #endif

@@ -33,9 +33,19 @@ namespace Pumpkin.SceneSeparate
             Root.CreateChilds();
         }
 
-        public void AddSceneObj(SceneObject obj)
+        public void AddSceneObj(SceneObjectDataMono obj)
         {
             Root.AddSceneObj(obj);
+        }
+
+        public void CheckBoundIsInCamera(Camera camera)
+        {
+            Root.CheckBoundIsInCamera(camera);
+        }
+
+        public void OutsideCamera(Camera camera)
+        {
+            Root.OutsideCamera(camera);
         }
 
 #if UNITY_EDITOR

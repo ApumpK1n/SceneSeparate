@@ -14,17 +14,7 @@ namespace Pumpkin.SceneSeparate
         /// 添加场景物体到节点
         /// </summary>
         /// <param name="obj"></param>
-        void AddSceneObj(SceneObject obj);
-        ///// <summary>
-        ///// 当触发者（主角）在该节点里时显示物体
-        ///// </summary>
-        ///// <param name="camera"></param>
-        //void Inside(Camera camera);
-        ///// <summary>
-        ///// 当触发者（主角）不在该节点里时隐藏物体
-        ///// </summary>
-        ///// <param name="camera"></param>
-        //void Outside(Camera camera);
+        void AddSceneObj(SceneObjectDataMono obj);
     }
 
 }

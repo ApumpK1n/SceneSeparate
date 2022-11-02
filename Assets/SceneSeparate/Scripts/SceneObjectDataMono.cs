@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-
+using Pumpkin.Utility;
 
 namespace Pumpkin.SceneSeparate
 {
@@ -20,6 +20,8 @@ namespace Pumpkin.SceneSeparate
         public Bounds Bounds => m_Bounds;
 
         public uint Depth { get; set; }
+
+        public int ID => GetInstanceID();
 
         private void Awake()
         {

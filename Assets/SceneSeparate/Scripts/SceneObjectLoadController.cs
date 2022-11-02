@@ -12,6 +12,8 @@ namespace Pumpkin.SceneSeparate
 
         private bool m_IsInitialized;
 
+        private Camera m_CurrentCamera;
+
         public void Init(Bounds bounds, TreeType treeType, uint maxDepth = 3)
         {
             if (m_IsInitialized) return;
@@ -40,12 +42,7 @@ namespace Pumpkin.SceneSeparate
             if (m_IsInitialized) return;
             BVH bvh = new BVH();
 
-            List<SceneObject> sceneObjects = new List<SceneObject>(sceneObjectDataMonos.Count);
-            foreach(var objData in sceneObjectDataMonos)
-            {
-                sceneObjects.Add(new SceneObject(objData));
-            }
-            bvh.BVHAccel(sceneObjects);
+            bvh.BVHAccel(sceneObjectDataMonos);
             m_Tree = bvh;
             m_IsInitialized = true;
         }
@@ -63,9 +60,21 @@ namespace Pumpkin.SceneSeparate
             if (obj == null)
                 return;
 
-            SceneObject sceneObject = new SceneObject(obj);
             ITreeNode tree = (ITreeNode)m_Tree;
-            tree.AddSceneObj(sceneObject);
+            tree.AddSceneObj(obj);
+        }
+
+        public void SetCamera(Camera camera)
+        {
+            m_CurrentCamera = camera;
+        }
+
+        private void Update()
+        {
+            if (m_Tree != null && m_IsInitialized)
+            {
+                m_Tree.CheckBoundIsInCamera(m_CurrentCamera);
+            }
         }
 
         private void OnDrawGizmosSelected()

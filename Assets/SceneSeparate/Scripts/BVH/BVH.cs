@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Pumpkin.Utility;
 
 namespace Pumpkin.SceneSeparate
 {
@@ -12,11 +13,21 @@ namespace Pumpkin.SceneSeparate
 
         public Bounds Bounds { get => m_root.Bounds; set { m_root.Bounds = value; } }
 
-        public void BVHAccel(List<SceneObject> sceneObjects)
+        public void BVHAccel(List<SceneObjectDataMono> sceneObjects)
         {
             if (sceneObjects == null || sceneObjects.Count < 1) return;
 
             m_root = RecursiveBuild(sceneObjects);
+        }
+
+        public void CheckBoundIsInCamera(Camera camera)
+        {
+            m_root.CheckBoundIsInCamera(camera);
+        }
+
+        public void OutsideCamera(Camera camera)
+        {
+            m_root.OutsideCamera(camera);
         }
 
 #if UNITY_EDITOR
@@ -26,7 +37,7 @@ namespace Pumpkin.SceneSeparate
         }
 #endif
 
-        private BVHBuildNode RecursiveBuild(List<SceneObject> sceneObjects)
+        private BVHBuildNode RecursiveBuild(List<SceneObjectDataMono> sceneObjects)
         {
             BVHBuildNode node = new BVHBuildNode();
 
@@ -43,8 +54,8 @@ namespace Pumpkin.SceneSeparate
 
             else if (sceneObjects.Count == 2)
             {
-                node.Left = RecursiveBuild(new List<SceneObject>() { sceneObjects[0] });
-                node.Right = RecursiveBuild(new List<SceneObject>() { sceneObjects[1] });
+                node.Left = RecursiveBuild(new List<SceneObjectDataMono>() { sceneObjects[0] });
+                node.Right = RecursiveBuild(new List<SceneObjectDataMono>() { sceneObjects[1] });
 
                 node.Bounds = node.Left.Bounds.Union(node.Right.Bounds);
 
@@ -75,8 +86,8 @@ namespace Pumpkin.SceneSeparate
                 int midIndex = sceneObjects.Count / 2;
                 int rightIndex = sceneObjects.Count - 1;
 
-                List<SceneObject> leftShapes = sceneObjects.GetRange(leftIndex, midIndex - leftIndex);
-                List<SceneObject> rightShapes = sceneObjects.GetRange(midIndex, rightIndex - midIndex + 1);
+                List<SceneObjectDataMono> leftShapes = sceneObjects.GetRange(leftIndex, midIndex - leftIndex);
+                List<SceneObjectDataMono> rightShapes = sceneObjects.GetRange(midIndex, rightIndex - midIndex + 1);
 
                 Assert.AreEqual(sceneObjects.Count, leftShapes.Count + rightShapes.Count);
 
@@ -90,30 +101,30 @@ namespace Pumpkin.SceneSeparate
 
     }
 
-    public class BVHSortCompareX : IComparer<SceneObject>
+    public class BVHSortCompareX : IComparer<SceneObjectDataMono>
     {
 
-        public int Compare(SceneObject x, SceneObject y)
+        public int Compare(SceneObjectDataMono x, SceneObjectDataMono y)
         {
             if (x.Bounds.center.x < y.Bounds.center.x) return -1; // x在y之前
             else return 1;
         }
     }
 
-    public class BVHSortCompareY : IComparer<SceneObject>
+    public class BVHSortCompareY : IComparer<SceneObjectDataMono>
     {
 
-        public int Compare(SceneObject x, SceneObject y)
+        public int Compare(SceneObjectDataMono x, SceneObjectDataMono y)
         {
             if (x.Bounds.center.y < y.Bounds.center.y) return -1; // x在y之前
             else return 1;
         }
     }
 
-    public class BVHSortCompareZ : IComparer<SceneObject>
+    public class BVHSortCompareZ : IComparer<SceneObjectDataMono>
     {
 
-        public int Compare(SceneObject x, SceneObject y)
+        public int Compare(SceneObjectDataMono x, SceneObjectDataMono y)
         {
             if (x.Bounds.center.z < y.Bounds.center.z) return -1; // x在y之前
             else return 1;
